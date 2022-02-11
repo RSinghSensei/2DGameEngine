@@ -34,7 +34,7 @@ public:
 class BasePool
 {
 public:
-	virtual ~BasePool() = 0;
+	virtual ~BasePool() = 0 {};
 
 };
 
