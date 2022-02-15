@@ -38,8 +38,9 @@ void Game::Initialize()
 
 	Logger::Log("Pre-Loading Done!");
 
-	Registry mainRegistry;
-	registry = &mainRegistry;
+
+	registry = std::make_unique<Registry>();
+	resourcemanager = std::make_unique<ResourceManager>();
 
 	Logger::Log("Registry Active");
 
@@ -83,7 +84,7 @@ void Game::inputPolling()
 }
 
 float xpos = 40.0f, ypos = 90.0f, xvel = 50.0f, yvel = 10.0f;
-glm::vec2 playerpos(xpos, ypos);
+//glm::vec2 playerpos(xpos, ypos);
 
 void Game::updateWorld()
 {	
@@ -95,16 +96,11 @@ void Game::updateWorld()
 	// Now for delta time
 
 	double dt = (SDL_GetTicks() - ms_last_frame)/ 1000.0;
-
-
 	ms_last_frame = SDL_GetTicks();
 
+	registry->getSystem<MovementSystem>().update(dt);
 
-	playerpos.x += xvel * dt;
-	playerpos.y += yvel * dt;
-
-
-
+	registry->registryUpdate();
 
 }
 
@@ -115,16 +111,19 @@ void Game::Render()
 	// Clears the entire render screen, forming the backbuffer right now
 	SDL_RenderClear(engineRenderer);
 
-	// Here we'll implement all our render calls, drawing objects etc.
-	// Temp. texture load
+	//// --	Here we'll implement all our render calls, drawing objects etc.
+	//// --	Temp. texture load
 
-	SDL_Surface* s1 = IMG_Load("./assets/images/tank-tiger-right.png");
-	SDL_Texture* t1 = SDL_CreateTextureFromSurface(engineRenderer, s1);
-	SDL_FreeSurface(s1);
+	//SDL_Surface* s1 = IMG_Load("./assets/images/tank-tiger-right.png");
+	//SDL_Texture* t1 = SDL_CreateTextureFromSurface(engineRenderer, s1);
+	//SDL_FreeSurface(s1);
 
-	SDL_Rect p1{ (int)playerpos.x, (int)playerpos.y, 32, 32 };
-	SDL_RenderCopy(engineRenderer, t1, NULL, &p1);
-	SDL_DestroyTexture(t1);
+	registry->getSystem<RenderSystem>().update(engineRenderer, resourcemanager);
+
+
+	//SDL_Rect p1{ (int)playerpos.x, (int)playerpos.y, 32, 32 };
+	//SDL_RenderCopy(engineRenderer, t1, NULL, &p1);
+	//SDL_DestroyTexture(t1);
 
 	// Final call, where we've completed the backbuffer
 	// This'll swap
@@ -136,25 +135,24 @@ void Game::Render()
 void Game::Setup()
 {
 	registry->addSystem<MovementSystem>();
+	registry->addSystem<RenderSystem>();
 
 	Entity tigerTank = registry->createEntity();
-	Entity pantherTank = registry->createEntity();
+	//Entity pantherTank = registry->createEntity();
 	// We're going to add components to the entity
 	// Call registry, addComponent, will modify bitset
 	// Then add to systems, and bam, we're done
-
+	resourcemanager->addTexture(engineRenderer, "tank-tiger-right", ".\\assets\\images\\tank-tiger-right.png");
 	registry->addComponent<ObjTransformComponent>(tigerTank, glm::vec3(40.0f, 90.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), 0.0f);
-	registry->addComponent<RigidBodyComponent>(tigerTank, glm::vec2(50.0f, 10.0f));
+	registry->addComponent<RigidBodyComponent>(tigerTank, glm::vec2(xvel, yvel));
+	registry->addComponent<SpriteComponent>(tigerTank, "tank-tiger-right", glm::vec2(32, 32));
 	
-	registry->addComponent<ObjTransformComponent>(pantherTank);
-	registry->addComponent<RigidBodyComponent>(pantherTank);
+	//registry->addComponent<ObjTransformComponent>(pantherTank);
+	//registry->addComponent<RigidBodyComponent>(pantherTank);
 
 	//tigerTank.addComponent<ObjTransformComponent>(glm::vec3(40.0f, 90.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), 0.0f);
 	//tigerTank.addComponent<RigidBodyComponent>(glm::vec2(50.0f, 10.0f));
 	/*pantherTank.addComponent<ObjTransformComponent>();
 	pantherTank.addComponent<RigidBodyComponent>();*/
-
-
-	//registry->getSystem<MovementSystem>().updateMS();
 
 }

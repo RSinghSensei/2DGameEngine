@@ -4,9 +4,9 @@
 
 struct RigidBodyComponent
 {
-	glm::vec2 velocity;
+	glm::vec2 objVelocity;
 
-	RigidBodyComponent(const glm::vec2& velocityVal) :velocity(velocityVal) {}
-	RigidBodyComponent() :velocity(0) {}
+	RigidBodyComponent(const glm::vec2& velocity) : objVelocity(velocity) {}
+	RigidBodyComponent() :objVelocity(0) {}
 
 };

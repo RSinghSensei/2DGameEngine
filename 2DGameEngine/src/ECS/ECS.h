@@ -28,6 +28,7 @@ private:
 
 class BaseComponent {
 public:
+	BaseComponent() = default;
 	static int nextID;
 };
 
@@ -87,7 +88,7 @@ public:
 	template<typename T, typename ...Targs> void addSystem(Targs&& ...args);
 	template<typename T> void removeSystem();
 	template<typename T> bool hasSystem();
-	template<typename T> T getSystem();
+	template<typename T> T& getSystem();
 
 private:
 
@@ -107,7 +108,7 @@ class Pool : public BasePool
 public:
 	Pool() {}
 	Pool(unsigned int size) { data.reserve(size); }
-	virtual ~Pool() {};
+	virtual ~Pool() = default;
 	
 	bool isEmpty() const;
 	unsigned int getSize() const { return data.size(); }
@@ -220,14 +221,6 @@ template<typename T, typename ...Targs>
 void Registry::addSystem(Targs&& ...args)
 {
 	std::shared_ptr<T>newSystem = std::make_shared<T>(std::forward<Targs>(args)...);
-	//systemsRegister.insert(std::make_pair(std::type_index(typeid(T)), newSystem));
-			
-	//systemsRegister.insert(std::make_pair(typeid(T), std::make_shared<T>(std::forward<Targs>(args)...)));
-	/*systemsRegister.insert({ typeid(T), newSystem });*/
-	//systemsRegister[typeid(T)] = newSystem;
-
-	//systemsRegister.emplace(std::make_pair(std::type_index(typeid(T)), newSystem));
-	//systemsRegister[std::type_index(typeid(T))] = newSystem;
 	systemsRegister.insert(std::make_pair(std::type_index(typeid(T)), newSystem));
 
 }	
@@ -247,7 +240,7 @@ bool Registry::hasSystem()
 }
 
 template<typename T>
-T Registry::getSystem()
+T& Registry::getSystem()
 {	
 	return *(std::static_pointer_cast<T>(systemsRegister[std::type_index(typeid(T))]));
 

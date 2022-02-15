@@ -1,5 +1,8 @@
 #include "ECS.h"
 
+
+int BaseComponent::nextID{};
+
 // Registry Iplementations
 
 const Entity Registry::createEntity()
@@ -37,10 +40,9 @@ void Registry::addEntitytoSystem(const Entity &e1)
 
 void Registry::registryUpdate()
 {
-	auto it = entitycreationQueue.begin();
-	while(it != entitycreationQueue.end())
+	for (const auto& entity : entitycreationQueue)
 	{
-		addEntitytoSystem(*it);
+		addEntitytoSystem(entity);
 	}
 
 	entitycreationQueue.clear();
@@ -97,8 +99,6 @@ std::vector<Entity> System::getEntityList()
 
 
 // Component Implementations
-
-int BaseComponent::nextID{};
 
 
 

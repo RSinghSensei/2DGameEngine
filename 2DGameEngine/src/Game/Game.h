@@ -2,10 +2,13 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include "../Logger/Logger.h"
+#include <glm/glm.hpp>
 #include "../ECS/ECS.h"
-#include "../Components/ObjTransformComponent.h"
 #include "../Components/RigidBodyComponent.h"
+#include "../Components/ObjTransformComponent.h"
 #include "../Systems/MovementSystem.h"
+#include "../Systems/Render.h"
+#include "../ResourceManager/ResourceManager.h"
 
 class Game {
 public:
@@ -32,7 +35,7 @@ private:
 	const int ms_per_frame = 1000 / FPS;
 	int ms_last_frame = 0;
 
-	Registry* registry = nullptr;
-
+	std::unique_ptr<Registry> registry;
+	std::unique_ptr<ResourceManager> resourcemanager;
 
 };
